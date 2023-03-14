@@ -1,1 +1,14 @@
+myName = "seoyo" # 카멜
+my_name = "변서영" #스네이크
+_my_name="korea" #파스칼
+MYNAME = "God is love"
+my2name = "12345"
+# 2myname = '9876'
+# my-name = "seoyoyoyo"
+# my name = "kiki"
+myStr = '123'# str
+myNum = 123 # int
 
+print(myStr, myNum)
+print(type(myStr))
+print(type(myNum))
