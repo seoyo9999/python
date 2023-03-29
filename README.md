@@ -24,7 +24,7 @@
 '''Life is too short. You need python'''
 
 
-####데이터 타입
+#### 데이터 타입
 + 텍스트
 + 숫자
 + 불(bool)
