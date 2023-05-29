@@ -1,0 +1,153 @@
+# 지역별 누적 확진자 수 지도에 표시하기
+
+pip install folium
+
+import pandas as pd
+import folium
+
+geo_json = 'https://raw.githubusercontent.com/southkorea/southkorea-maps/master/kostat/2013/json/skorea_provinces_geo_simple.json'
+
+#지역별 누적확진자수 5.24일 기준
+raw_data = [
+    ['제주특별자치도', 401392],
+    ['경상남도', 1879008],
+    ['경상북도', 1439188],
+    ['전라남도',1034134],
+    ['전라북도',1060840],
+    ['충청남도',1277566],
+    ['충청북도',990449],
+    ['강원도',925699],
+    ['경기도',8554887],
+    ['세종특별자치시',251198],
+    ['울산광역시',667773],
+    ['대전광역시',922445],
+    ['광주광역시',920606],
+    ['인천광역시',1837635],
+    ['대구광역시',1371430],
+    ['부산광역시',1861177],
+    ['서울특별시',6178627],
+]
+
+data = pd.DataFrame(raw_data, columns=['name', 'value'])
+
+m = folium.Map(
+    location=[36, 128],
+    zoom_start=6,
+    tiles='Stamen Terrain'
+)
+
+folium.Marker(
+    location=[33.331441, 126.504237],
+    popup="제주특별자치도:\n401392(명)",
+    icon=folium.Icon(color="red", icon="star")
+).add_to(m)
+
+folium.Marker(
+    location=[35.344255,128.335797],
+    popup="경상남도:\n1879008(명)",
+    icon=folium.Icon(color="red", icon="star")
+).add_to(m)
+
+folium.Marker(
+    location=[36.226134,128.863713],
+    popup="경상북도:\n1439188(명)",
+    icon=folium.Icon(color="red", icon="star")
+).add_to(m)
+
+folium.Marker(
+    location=[34.853900,126.962464],
+    popup="전라남도:\n1034134(명)",
+    icon=folium.Icon(color="red", icon="star")
+).add_to(m)
+
+folium.Marker(
+    location=[35.716417,127.152831],
+    popup="전라북도:\n1060840(명)",
+    icon=folium.Icon(color="red", icon="star")
+).add_to(m)
+
+folium.Marker(
+    location=[36.718442,126.800213],
+    popup="충청남도:\n1277566(명)",
+    icon=folium.Icon(color="red", icon="star")
+).add_to(m)
+
+folium.Marker(
+    location=[36.986001,127.702016],
+    popup="충청북도:\n990449(명)",
+    icon=folium.Icon(color="red", icon="star")
+).add_to(m)
+
+folium.Marker(
+    location=[37.812012,128.170153],
+    popup="강원도:\n925699(명)",
+    icon=folium.Icon(color="red", icon="star")
+).add_to(m)
+
+folium.Marker(
+    location=[37.412689,127.513816],
+    popup="경기도:\n8554887(명)",
+    icon=folium.Icon(color="red", icon="star")
+).add_to(m)
+
+folium.Marker(
+    location=[36.561596,127.257020],
+    popup="세종특별자치시:\n251198(명)",
+    icon=folium.Icon(color="red", icon="star")
+).add_to(m)
+
+folium.Marker(
+    location=[35.551768,129.239227],
+    popup="울산광역시:\n667773(명)",
+    icon=folium.Icon(color="red", icon="star")
+).add_to(m)
+
+folium.Marker(
+    location=[36.340134,127.393345],
+    popup="대전광역시:\n922445(명)",
+    icon=folium.Icon(color="red", icon="star")
+).add_to(m)
+
+folium.Marker(
+    location=[35.155510,126.835539],
+    popup="광주광역시:\n920606(명)",
+    icon=folium.Icon(color="red", icon="star")
+).add_to(m)
+
+folium.Marker(
+    location=[37.455891,126.700124],
+    popup="인천광역시:\n1837635(명)",
+    icon=folium.Icon(color="red", icon="star")
+).add_to(m)
+
+folium.Marker(
+    location=[35.829095,128.566215],
+    popup="대구광역시:\n1371430(명)",
+    icon=folium.Icon(color="red", icon="star")
+).add_to(m)
+
+folium.Marker(
+    location=[35.204225,129.071238],
+    popup="부산광역시:\n1861177(명)",
+    icon=folium.Icon(color="red", icon="star")
+).add_to(m)
+
+folium.Marker(
+    location=[37.549393,126.991821],
+    popup="서울특별시:\n6178627(명)",
+    icon=folium.Icon(color="red", icon="star")
+).add_to(m)
+
+folium.Choropleth(
+    geo_data=geo_json,  # Replace with your GeoJSON file or path
+    name='choropleth',
+    data=data,
+    columns=['name', 'value'],
+    key_on='feature.properties.name',
+    fill_color='Dark2',
+    # fill_color='YlGn',
+    fill_opacity=0.7,
+    line_opacity=0.2,
+).add_to(m)
+
+m
