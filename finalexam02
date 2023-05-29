@@ -1,0 +1,33 @@
+# open api 데이터를 excel로 저장하기
+
+pip install xmltodict
+
+# Json 파일로 다운
+
+import xmltodict
+import requests
+import json
+import pandas as pd
+from google.colab import files
+
+
+key = "38Ftllswk33wb%2FOnxFaWF25nE7m%2FrD1tZwqrgfhDGER6RoDONbN9fMwR8sP9QukFckd%2F1IcbWKkM7n4GuuuXeQ%3D%3D"
+url = "http://apis.data.go.kr/1352000/ODMS_COVID_04/callCovid04Api?serviceKey={}".format(key)
+
+content = requests.get(url).content
+dict = xmltodict.parse(content)
+# jsonString = json.dumps(dict['response']['body']['items'], ensure_ascii = False)
+jsonString = json.dumps(dict['response']['body'], ensure_ascii = False)
+jsonObj = json.loads(jsonString)
+
+for item in jsonObj ['items']['item']:
+   print(item)
+
+file = open("covid.json", "w+")
+file.write(json.dumps(jsonObj['items']['item']))
+
+files.download('covid.json')
+# df = pd.DataFrame(jsonObj['items']['item'])
+# print(df.count)
+# def save(df)
+# print(len(jsonObj['items']['item']))
