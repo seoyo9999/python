@@ -1,0 +1,14 @@
+# excel 파일 다운(finalexam02 코드 실행 후 실행해야 동작)
+
+import pandas as pd
+import json
+from google.colab import files
+
+df = pd.read_json("covid.json")
+print(df.count())
+
+with pd.ExcelWriter("covid.xlsx") as writer: 
+
+  df.to_excel(writer, sheet_name='sheet1')
+
+files.download('covid.xlsx')
