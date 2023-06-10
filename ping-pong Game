@@ -1,0 +1,172 @@
+import pygame
+from pygame.locals import *
+import sys
+import time
+
+# 초기화
+pygame.init()
+clock = pygame.time.Clock()
+
+# 게임 창 크기 설정
+screen_width = 640
+screen_height = 480
+screen = pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption("핑퐁 게임-변서영")
+
+# 색상 설정
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+BLUE = (0, 0, 255)
+
+# 패들 초기 설정
+paddle_width = 60
+paddle_height = 10
+paddle_speed = 5
+player_paddle_x = screen_width // 2 - paddle_width // 2
+
+# 공 초기 설정
+ball_radius = 10
+ball_x = screen_width // 2
+ball_y = screen_height // 2
+ball_dx = 3
+ball_dy = -3
+
+# 점수 초기 설정
+player_score = 0
+score_font = pygame.font.Font(None, 36)
+
+# 라이프 초기 설정
+life_count = 3
+life_font = pygame.font.Font(None, 36)
+
+# 게임 상태
+game_over = False
+
+# 다시하기 버튼
+button_font = pygame.font.Font(None, 36)
+button_text = button_font.render("again", True, (148, 0, 211))
+button_width = 100
+button_height = 40
+button_rect = button_text.get_rect(center=(screen_width // 2, screen_height // 1.5 - button_height // 2 - 20))
+
+# 시작 버튼
+start_button_font = pygame.font.Font(None, 48)
+start_button_text = start_button_font.render("start", True, (148, 0, 211))
+start_button_width = 200
+start_button_height = 80
+start_button_rect = pygame.Rect((screen_width - start_button_width) // 2, screen_height // 1.5 - start_button_height // 2 - 20, start_button_width, start_button_height)
+
+# 게임 시작 변수
+game_started = False
+
+# 게임 종료 시간
+game_end_time = 0
+
+# 게임 루프
+while True:
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            pygame.quit()
+            sys.exit()
+        elif event.type == MOUSEBUTTONDOWN:
+            if not game_started:
+                if start_button_rect.collidepoint(event.pos):
+                    game_started = True
+            elif game_over:
+                if button_rect.collidepoint(event.pos):
+                    game_over = False
+                    player_score = 0
+                    ball_x = screen_width // 2
+                    ball_y = screen_height // 2
+                    ball_dx = 3
+                    ball_dy = -3
+                    life_count = 3
+
+    if game_started and not game_over:
+        # 마우스 위치 가져오기
+        mouse_x, _ = pygame.mouse.get_pos()
+
+        # 패들 이동
+        player_paddle_x = mouse_x - paddle_width // 2
+
+        # 화면 밖으로 나가지 않도록 패들 위치 제한
+        if player_paddle_x < 0:
+            player_paddle_x = 0
+        elif player_paddle_x > screen_width - paddle_width:
+            player_paddle_x = screen_width - paddle_width
+
+        # 공 이동
+        ball_x += ball_dx
+        ball_y += ball_dy
+
+        # 공 벽 충돌 처리
+        if ball_x <= 0 or ball_x >= screen_width - ball_radius:
+            ball_dx *= -1
+        if ball_y <= 0:
+            ball_dy *= -1
+        if ball_y >= screen_height - ball_radius:
+            life_count -= 1
+            if life_count > 0:
+                ball_x = screen_width // 2
+                ball_y = screen_height // 2
+                ball_dx = 3 + (3 - life_count)  # 라이프 감소할 때마다 속도 증가
+                ball_dy = -3 - (3 - life_count)  # 라이프 감소할 때마다 속도 증가
+            else:
+                game_over = True
+                game_end_time = time.time() + 3  # 3초 후 게임 종료
+
+        # 공 패들 충돌 처리
+        if ball_y >= screen_height - paddle_height - ball_radius:
+            if player_paddle_x <= ball_x <= player_paddle_x + paddle_width:
+                ball_dy *= -1
+                player_score += 1
+            else:
+                life_count -= 1
+                if life_count > 0:
+                    ball_x = screen_width // 2
+                    ball_y = screen_height // 2
+                    ball_dx = 3 + (3 - life_count)  # 라이프 감소할 때마다 속도 증가
+                    ball_dy = -3 - (3 - life_count)  # 라이프 감소할 때마다 속도 증가
+                else:
+                    game_over = True
+                    game_end_time = time.time() + 3  # 3초 후 게임 종료
+
+    # 화면 업데이트
+    screen.fill(BLACK)
+
+    if not game_started:
+        # 시작 버튼 표시
+        pygame.draw.rect(screen, WHITE, start_button_rect)
+        screen.blit(start_button_text, start_button_text.get_rect(center=start_button_rect.center))
+    else:
+        # 게임 진행 중인 경우 패들과 공 그리기
+        pygame.draw.rect(screen, WHITE, (player_paddle_x, screen_height - paddle_height, paddle_width, paddle_height))
+        pygame.draw.circle(screen, WHITE, (ball_x, ball_y), ball_radius)
+
+        # 점수 표시
+        score_text = score_font.render("Score: " + str(player_score), True, WHITE)
+        screen.blit(score_text, (10, 10))
+
+        # 라이프 표시
+        life_text = life_font.render("Lives: " + str(life_count), True, WHITE)
+        screen.blit(life_text, (screen_width - life_text.get_width() - 10, 10))
+
+        if game_over:
+            # 'Game Over' 문구 표시
+            game_over_text_font = pygame.font.Font(None, 48)
+            game_over_text = game_over_text_font.render("Game Over", True, (225, 225, 0))
+            game_over_rect = game_over_text.get_rect(center=(screen_width // 2, screen_height // 2))
+            screen.blit(game_over_text, game_over_rect)
+
+            # 다시하기 버튼 표시
+            pygame.draw.rect(screen, WHITE, button_rect)
+            screen.blit(button_text, button_rect)
+
+            # 게임 종료 시간이 지났으면 게임 종료
+            if time.time() >= game_end_time:
+                pygame.quit()
+                sys.exit()
+
+    # 화면 업데이트
+    pygame.display.flip()
+    clock.tick(60)
